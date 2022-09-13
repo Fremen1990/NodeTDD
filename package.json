@@ -5,10 +5,10 @@
   "main": "src/app.js",
   "scripts": {
     "client": "npx http-server -c-1 -p 8080 -P http://localhost:3000",
-    "startAll": "concurrently \"npm run dev\" \"cd client && npm run client\"",
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --watchAll",
+    "startAll": "concurrently \"cross-env NODE_ENV=dev npm run dev\" \"cd client && npm run client\"",
+    "start": "cross-env NODE_ENV=dev node index.js",
+    "dev": "cross-env NODE_ENV=dev nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --watchAll",
     "lint": "eslint . ",
     "lint-fix": "eslint . --fix"
   },
@@ -16,12 +16,14 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "config": "^3.3.8",
     "express": "^4.18.1",
     "sequelize": "^6.21.6",
     "sqlite3": "^5.0.11"
   },
   "devDependencies": {
     "concurrently": "^7.4.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
