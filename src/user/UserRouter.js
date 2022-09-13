@@ -62,10 +62,23 @@ router.post(
       errors.array().forEach((error) => (validationErrors[error.param] = req.t(error.msg)));
       return res.status(400).send({ validationErrors: validationErrors });
     }
-
-    await UserService.save(req.body);
-    return res.send({ message: req.t('user_create_success') });
+    try {
+      await UserService.save(req.body);
+      return res.send({ message: req.t('user_create_success') });
+    } catch (error) {
+      return res.status(502).send({ message: req.t(error.message) });
+    }
   }
 );
+
+router.post('/api/1.0/users/token/:token', async (req, res) => {
+  const token = req.params.token;
+  try {
+    await UserService.activate(token);
+  } catch (err) {
+    return res.status(400).send({ message: req.t(err.message) });
+  }
+  res.send({ message: req.t('account_activation_success') });
+});
 
 module.exports = router;

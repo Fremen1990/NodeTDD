@@ -7,5 +7,8 @@
   "password_size": "Hasło musi mieć minimum 6 znaków",
   "password_pattern": "Hasło musi mieć minimum jedną małą literę, jedną dużą literę i jedną cyfrę",
   "email_in_use": "Ten adres email jest juz w bazie danych",
-  "user_create_success": "Użytkownik pomyślnie utworzony"
+  "user_create_success": "Użytkownik pomyślnie utworzony",
+  "email_failure": "E-mail nie został dostarczony",
+  "account_activation_failure": "To konto jest już aktywowane bądź token nie jest proawidłowy",
+  "account_activation_success": "To konto zostało aktywowane"
 }
