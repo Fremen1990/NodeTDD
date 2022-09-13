@@ -10,5 +10,6 @@
   "user_create_success": "Użytkownik pomyślnie utworzony",
   "email_failure": "E-mail nie został dostarczony",
   "account_activation_failure": "To konto jest już aktywowane bądź token nie jest proawidłowy",
-  "account_activation_success": "To konto zostało aktywowane"
+  "account_activation_success": "To konto zostało aktywowane",
+  "validation_failure": "Walidacja nie powiodła się"
 }
