@@ -1,0 +1,11 @@
+{
+  "username_null": "Użytkownik nie może być pusty",
+  "username_size": "Musi mieć minimum4 i maksimum 32 znaki",
+  "email_null": "Email nie może byc pusty",
+  "email_invalid": "Email nie jest poprawny",
+  "password_null": "Hasło nie może być puste",
+  "password_size": "Hasło musi mieć minimum 6 znaków",
+  "password_pattern": "Hasło musi mieć minimum jedną małą literę, jedną dużą literę i jedną cyfrę",
+  "email_in_use": "Ten adres email jest juz w bazie danych",
+  "user_create_success": "Użytkownik pomyślnie utworzony"
+}
