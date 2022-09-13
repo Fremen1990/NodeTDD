@@ -3,48 +3,51 @@ const app = require('../src/app');
 const User = require('../src/user/User');
 const sequelize = require('../src/config/database');
 
-//TODO 9. Saving User to Database 10:30
+beforeAll(() => {
+  return sequelize.sync();
+});
+
+beforeEach(() => {
+  return User.destroy({ truncate: true });
+});
 
 describe('User Registration', () => {
-  it('retuens 200 OK when signup request is valid', (done) => {
-    request(app)
-      .post('/api/1.0/users')
-      .send({
-        username: 'user1',
-        email: 'user@email.com',
-        password: 'password1234',
-      })
-      .expect(200, done);
+  const postValidUser = () => {
+    return request(app).post('/api/1.0/users').send({
+      username: 'user1',
+      email: 'user@email.com',
+      password: 'password1234',
+    });
+  };
+
+  it('retuens 200 OK when signup request is valid', async () => {
+    const response = await postValidUser();
+    expect(response.status).toBe(200);
   });
 
-  it('returns success message when signup request is valid', (done) => {
-    request(app)
-      .post('/api/1.0/users')
-      .send({
-        username: 'user1',
-        email: 'user@email.com',
-        password: 'password1234',
-      })
-      .then((response) => {
-        expect(response.body.message).toBe('User created');
-        done();
-      });
+  it('returns success message when signup request is valid', async () => {
+    const response = await postValidUser();
+    expect(response.body.message).toBe('User created');
   });
 
-  it('saves user to database', (done) => {
-    request(app)
-      .post('/api/1.0/users')
-      .send({
-        username: 'user1',
-        email: 'user@email.com',
-        password: 'password1234',
-      })
-      .then(() => {
-        // query user table
-        User.findAll().then((userList) => {
-          expect(userList.length).toBe(1);
-        });
-        done();
-      });
+  it('saves user to database', async () => {
+    await postValidUser();
+    const usersList = await User.findAll();
+    expect(usersList.length).toBe(1);
+  });
+
+  it('saves username and email to database', async () => {
+    await postValidUser();
+    const usersList = await User.findAll();
+    const savedUser = await usersList[0];
+    expect(savedUser.username).toBe('user1');
+    expect(savedUser.email).toBe('user@email.com');
+  });
+
+  it('hashes the password in database', async () => {
+    await postValidUser();
+    const usersList = await User.findAll();
+    const savedUser = await usersList[0];
+    expect(savedUser.password).not.toBe('password1234');
   });
 });
