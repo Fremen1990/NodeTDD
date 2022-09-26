@@ -8,7 +8,7 @@
     "startAll": "concurrently \"cross-env NODE_ENV=dev npm run dev\" \"cd client && npm run client\"",
     "start": "cross-env NODE_ENV=dev node index.js",
     "dev": "cross-env NODE_ENV=dev nodemon index.js",
-    "test": "cross-env NODE_ENV=test jest --watchAll",
+    "test": "cross-env NODE_ENV=test jest --watchAll --verbose",
     "lint": "eslint . ",
     "lint-fix": "eslint . --fix"
   },
@@ -68,6 +68,8 @@
     "watchPlugins": [
       "jest-watch-typeahead/filename",
       "jest-watch-typeahead/testname"
-    ]
+    ],
+    "verbose": true,
+    "testTimeout": 5000
   }
 }

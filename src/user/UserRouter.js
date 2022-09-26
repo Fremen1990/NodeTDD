@@ -2,9 +2,11 @@ expres = require('express');
 const router = expres.Router();
 const UserService = require('./UserService');
 const ValidationException = require('../error/ValidationException');
+const UserNotFoundException = require('./UserNotFoundException');
 
 const { check, validationResult } = require('express-validator');
 const User = require('./User');
+const pagination = require('../middleware/pagination');
 
 // const validateUsername = (req, res, next) => {
 //   const user = req.body;
@@ -78,6 +80,21 @@ router.post('/api/1.0/users/token/:token', async (req, res, next) => {
     return res.send({ message: req.t('account_activation_success') });
   } catch (err) {
     // return res.status(400).send({ message: req.t(err.message) });
+    next(err);
+  }
+});
+
+router.get('/api/1.0/users', pagination, async (req, res) => {
+  const { page, size } = req.pagination;
+  const users = await UserService.getUsers(page, size);
+  await res.send(users);
+});
+
+router.get('/api/1.0/users/:id', async (req, res, next) => {
+  try {
+    const user = await UserService.getUser(req.params.id);
+    res.send(user);
+  } catch (err) {
     next(err);
   }
 });
