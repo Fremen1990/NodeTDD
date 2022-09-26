@@ -3,13 +3,15 @@ const app = require('../src/app');
 const User = require('../src/user/User');
 const sequelize = require('../src/config/database');
 const { SMTPServer } = require('smtp-server');
+const en = require('../locales/en/translation.json');
+const pl = require('../locales/pl/translation.json');
 
 beforeAll(async () => {
   await sequelize.sync();
 });
 
-beforeEach(() => {
-  return User.destroy({ truncate: true });
+beforeEach(async () => {
+  await User.destroy({ truncate: true });
 });
 
 const getUsers = () => {
@@ -51,7 +53,6 @@ describe('Listing Users', () => {
   it('returns 6 users in page content when there are active 6 users and inactive 5 users in database', async () => {
     await addUsers(6, 5);
     const response = await getUsers();
-    console.log(response.body.content[0]);
     expect(response.body.content.length).toBe(6);
   });
 
@@ -123,8 +124,8 @@ describe('Get User', () => {
 
   it.each`
     language | message
-    ${'pl'}  | ${'Użytkownik nie znaleziony'}
-    ${'en'}  | ${'User not found'}
+    ${'pl'}  | ${pl.user_not_found}
+    ${'en'}  | ${en.user_not_found}
   `('returns $message for unknown user when language is set to $language', async ({ language, message }) => {
     const response = await getUser().set('Accept-Language', language);
     expect(response.body.message).toBe(message);

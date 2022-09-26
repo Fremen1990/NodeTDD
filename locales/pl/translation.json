@@ -12,5 +12,7 @@
   "account_activation_failure": "To konto jest już aktywowane bądź token nie jest proawidłowy",
   "account_activation_success": "To konto zostało aktywowane",
   "validation_failure": "Walidacja nie powiodła się",
-  "user_not_found": "Użytkownik nie znaleziony"
+  "user_not_found": "Użytkownik nie znaleziony",
+  "authentication_failure": "Niepoprawne dane logowania",
+  "inactive_authentication_failure": "Konto jest nieaktywne"
 }

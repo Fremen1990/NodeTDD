@@ -2,10 +2,8 @@ expres = require('express');
 const router = expres.Router();
 const UserService = require('./UserService');
 const ValidationException = require('../error/ValidationException');
-const UserNotFoundException = require('./UserNotFoundException');
 
 const { check, validationResult } = require('express-validator');
-const User = require('./User');
 const pagination = require('../middleware/pagination');
 
 // const validateUsername = (req, res, next) => {
