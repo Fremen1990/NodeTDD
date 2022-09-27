@@ -6,7 +6,8 @@ const ForbiddenException = require('../error/ForbiddenException');
 
 const { check, validationResult } = require('express-validator');
 const pagination = require('../middleware/pagination');
-const basicAuthentication = require('../middleware/basicAuthentication');
+// const basicAuthentication = require('../middleware/basicAuthentication');
+const tokenAuthentication = require('../middleware/tokenAuthentication');
 
 // const validateUsername = (req, res, next) => {
 //   const user = req.body;
@@ -84,7 +85,7 @@ router.post('/api/1.0/users/token/:token', async (req, res, next) => {
   }
 });
 
-router.get('/api/1.0/users', pagination, basicAuthentication, async (req, res) => {
+router.get('/api/1.0/users', pagination, tokenAuthentication, async (req, res) => {
   const authenticatedUser = req.authenticatedUser;
   const { page, size } = req.pagination;
   const users = await UserService.getUsers(page, size, authenticatedUser);
@@ -100,7 +101,7 @@ router.get('/api/1.0/users/:id', async (req, res, next) => {
   }
 });
 
-router.put('/api/1.0/users/:id', basicAuthentication, async (req, res, next) => {
+router.put('/api/1.0/users/:id', tokenAuthentication, async (req, res, next) => {
   const authenticatedUser = req.authenticatedUser;
   if (!authenticatedUser || authenticatedUser.id != req.params.id) {
     return next(new ForbiddenException('unauthorized_user_update'));

@@ -5,6 +5,7 @@ const sequelize = require('../src/config/database');
 const bcrypt = require('bcrypt');
 const en = require('../locales/en/translation.json');
 const pl = require('../locales/pl/translation.json');
+const Token = require('../src/auth/Token');
 
 beforeAll(async () => {
   await sequelize.sync();
@@ -29,6 +30,14 @@ const postAuthentication = async (credentials, options = {}) => {
   return await agent.send(credentials);
 };
 
+const postLogout = (options = {}) => {
+  const agent = request(app).post('/api/1.0/logout');
+  if (options.token) {
+    agent.set('Authorization', `Bearer ${options.token}`);
+  }
+  return agent.send();
+};
+
 describe('Authentication', () => {
   it('returns 200 when credentials are correct', async () => {
     await addUser();
@@ -36,12 +45,12 @@ describe('Authentication', () => {
     expect(response.status).toBe(200);
   });
 
-  it('returns only user id and username when login success', async () => {
+  it('returns only user id, username and token when login success', async () => {
     const user = await addUser();
     const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
     expect(response.body.id).toBe(user.id);
     expect(response.body.username).toBe(user.username);
-    expect(Object.keys(response.body)).toEqual(['id', 'username']);
+    expect(Object.keys(response.body)).toEqual(['id', 'username', 'token']);
   });
 
   it('returns 401 when user does not exist', async () => {
@@ -110,5 +119,27 @@ describe('Authentication', () => {
   it('returns 401 when password is not valid', async () => {
     const response = await postAuthentication({ email: 'user1@mail.com' });
     expect(response.status).toBe(401);
+  });
+
+  it('returns token in response body when credentials are correct', async () => {
+    await addUser();
+    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    expect(response.body.token).not.toBeUndefined();
+  });
+});
+
+describe('Logout', () => {
+  it('returns 200 ok when unauthorized request send for logout', async () => {
+    const response = await postLogout();
+    expect(response.status).toBe(200);
+  });
+
+  it('removes the token from database', async () => {
+    await addUser();
+    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const token = response.body.token;
+    await postLogout({ token: token });
+    const storedToken = await Token.findOne({ where: { token: token } });
+    expect(storedToken).toBeNull();
   });
 });
