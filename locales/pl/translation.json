@@ -14,5 +14,6 @@
   "validation_failure": "Walidacja nie powiodła się",
   "user_not_found": "Użytkownik nie znaleziony",
   "authentication_failure": "Niepoprawne dane logowania",
-  "inactive_authentication_failure": "Konto jest nieaktywne"
+  "inactive_authentication_failure": "Konto jest nieaktywne",
+  "unauthorized_user_update": "Nie masz autoryzacji do edycji tego użytkownika"
 }

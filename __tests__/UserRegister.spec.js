@@ -32,6 +32,8 @@ beforeAll(async () => {
   await server.listen(8587, 'localhost');
 
   await sequelize.sync();
+
+  jest.setTimeout(20000);
 });
 
 beforeEach(async () => {
@@ -41,6 +43,8 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await server.close();
+
+  jest.setTimeout(5000);
 });
 
 const validUser = {
@@ -61,18 +65,18 @@ describe('User Registration', () => {
   it('retuens 200 OK when signup request is valid', async () => {
     const response = await postUser();
     expect(response.status).toBe(200);
-  });
+  }, 15000);
 
   it('returns success message when signup request is valid', async () => {
     const response = await postUser();
     expect(response.body.message).toBe(en.user_create_success);
-  });
+  }, 15000);
 
   it('saves user to database', async () => {
     await postUser();
     const usersList = await User.findAll();
     expect(usersList.length).toBe(1);
-  });
+  }, 15000);
 
   it('saves username and email to database', async () => {
     await postUser();
