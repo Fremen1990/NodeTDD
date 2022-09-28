@@ -16,5 +16,6 @@
   "authentication_failure": "Niepoprawne dane logowania",
   "inactive_authentication_failure": "Konto jest nieaktywne",
   "unauthorized_user_update": "Nie masz autoryzacji do edycji tego użytkownika",
-  "unauthorized_user_delete": "Nie masz autoryzacji do usuwania tego użytkownika"
+  "unauthorized_user_delete": "Nie masz autoryzacji do usuwania tego użytkownika",
+  "email_not_inuse": "E-mail nie znaleziony"
 }
