@@ -3,31 +3,10 @@ const router = expres.Router();
 const UserService = require('./UserService');
 const ValidationException = require('../error/ValidationException');
 const ForbiddenException = require('../error/ForbiddenException');
-
 const { check, validationResult } = require('express-validator');
 const pagination = require('../middleware/pagination');
 // const basicAuthentication = require('../middleware/basicAuthentication');
 const tokenAuthentication = require('../middleware/tokenAuthentication');
-
-// const validateUsername = (req, res, next) => {
-//   const user = req.body;
-//   if (user.username === null) {
-//     req.validationErrors = {
-//       username: 'Username cannot be null',
-//     };
-//   }
-//   next();
-// };
-//
-// const validateEmail = (req, res, next) => {
-//   if (user.email === null) {
-//     req.validationErrors = {
-//       ...req.validationErrors,
-//       email: 'Email cannot be null',
-//     };
-//   }
-//   next();
-// };
 
 router.post(
   '/api/1.0/users',
@@ -116,7 +95,7 @@ router.delete('/api/1.0/users/:id', tokenAuthentication, async (req, res, next) 
     return next(new ForbiddenException('unauthorized_user_delete'));
   }
   await UserService.deleteUser(req.params.id);
-  return res.send();
+  res.send();
 });
 
 module.exports = router;
