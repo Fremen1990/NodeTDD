@@ -15,5 +15,6 @@
   "user_not_found": "Użytkownik nie znaleziony",
   "authentication_failure": "Niepoprawne dane logowania",
   "inactive_authentication_failure": "Konto jest nieaktywne",
-  "unauthorized_user_update": "Nie masz autoryzacji do edycji tego użytkownika"
+  "unauthorized_user_update": "Nie masz autoryzacji do edycji tego użytkownika",
+  "unauthorized_user_delete": "Nie masz autoryzacji do usuwania tego użytkownika"
 }
