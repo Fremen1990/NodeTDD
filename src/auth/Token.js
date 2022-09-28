@@ -10,8 +10,11 @@ Token.init(
     token: {
       type: Sequelize.STRING,
     },
+    lastUsedAt: {
+      type: Sequelize.DATE,
+    },
   },
-  { sequelize, modelName: 'token' }
+  { sequelize, modelName: 'token', timestamps: false }
 );
 
 module.exports = Token;
