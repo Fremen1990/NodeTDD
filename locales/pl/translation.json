@@ -18,5 +18,7 @@
   "unauthorized_user_update": "Nie masz autoryzacji do edycji tego użytkownika",
   "unauthorized_user_delete": "Nie masz autoryzacji do usuwania tego użytkownika",
   "email_not_inuse": "E-mail nie znaleziony",
-  "password_reset_request_success": "Sprawdź e-mail żeby zresetować swoje hasło"
+  "password_reset_request_success": "Sprawdź e-mail żeby zresetować swoje hasło",
+  "unauthorized_password_reset": "Nie masz autoryzacji do zmiany hasła, powtórz kroki do zmiany hasła"
+
 }

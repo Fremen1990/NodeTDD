@@ -65,6 +65,14 @@ const postPasswordReset = (email = 'user1@mail.com', options = {}) => {
   return agent.send({ email: email });
 };
 
+const putPasswordUpdate = (body = {}, options = {}) => {
+  const agent = request(app).put('/api/1.0/user/password');
+  if (options.language) {
+    agent.set('Accept-Language', options.language);
+  }
+  return agent.send(body);
+};
+
 describe('Password Reset Request', () => {
   it('returns 404 when a password request is sent from unknown e-mail', async () => {
     const response = await postPasswordReset();
@@ -151,4 +159,74 @@ describe('Password Reset Request', () => {
     const response = await postPasswordReset(user.email, { language: language });
     expect(response.body.message).toBe(message);
   });
+});
+
+describe('Password Update', () => {
+  it('returns 403 when password update request does not have the valid password token', async () => {
+    const response = await putPasswordUpdate({ password: 'P4ssword', passwordResetToken: 'abcd' });
+    expect(response.status).toBe(403);
+  });
+
+  it.each`
+    language | message
+    ${'pl'}  | ${pl.unauthorized_password_reset}
+    ${'en'}  | ${en.unauthorized_password_reset}
+  `(
+    'returns error body with $message when language is set to $language after trying to update with invalid token',
+    async ({ language, message }) => {
+      const nowInMillis = new Date().getTime();
+      const response = await putPasswordUpdate(
+        { password: 'P4ssword', passwordResetToken: 'abcd' },
+        { language: language }
+      );
+      expect(response.body.path).toBe('/api/1.0/user/password');
+      expect(response.body.timestamp).toBeGreaterThan(nowInMillis);
+      expect(response.body.message).toBe(message);
+    }
+  );
+
+  it('returns 403 when password update request with invalid password patter and the reset token is invalid', async () => {
+    const response = await putPasswordUpdate({ password: 'password-not-valid', passwordResetToken: 'abcd' });
+    expect(response.status).toBe(403);
+  });
+
+  it('returns 400 bad request when trying to update with invalid password and reset token is valid', async () => {
+    const user = await addUser();
+    user.passwordResetToken = 'test-token';
+    await user.save();
+    const response = await putPasswordUpdate({ password: 'not-valid', passwordResetToken: 'test-token' });
+    expect(response.status).toBe(400);
+  });
+
+  it.each`
+    language | value                | message
+    ${'en'}  | ${null}              | ${en.password_null}
+    ${'en'}  | ${'P4ssw'}           | ${en.password_size}
+    ${'en'}  | ${'alllowercase'}    | ${en.password_pattern}
+    ${'en'}  | ${'ALLUPPERCASE'}    | ${en.password_pattern}
+    ${'en'}  | ${'1234567890'}      | ${en.password_pattern}
+    ${'en'}  | ${'lowerUPPER'}      | ${en.password_pattern}
+    ${'en'}  | ${'lower2542number'} | ${en.password_pattern}
+    ${'en'}  | ${'UPPER535NUMBER'}  | ${en.password_pattern}
+    ${'pl'}  | ${null}              | ${pl.password_null}
+    ${'pl'}  | ${'P4ssw'}           | ${pl.password_size}
+    ${'pl'}  | ${'alllowercase'}    | ${pl.password_pattern}
+    ${'pl'}  | ${'ALLUPPERCASE'}    | ${pl.password_pattern}
+    ${'pl'}  | ${'1234567890'}      | ${pl.password_pattern}
+    ${'pl'}  | ${'lowerUPPER'}      | ${pl.password_pattern}
+    ${'pl'}  | ${'lower2542number'} | ${pl.password_pattern}
+    ${'pl'}  | ${'UPPER535NUMBER'}  | ${pl.password_pattern}
+  `(
+    'returns password validation error message $message when language is set to $language and value is set to $value',
+    async ({ language, value, message }) => {
+      const user = await addUser();
+      user.passwordResetToken = 'test-token';
+      await user.save();
+      const response = await putPasswordUpdate(
+        { password: value, passwordResetToken: 'test-token' },
+        { language: language }
+      );
+      expect(response.body.validationErrors.password).toBe(message);
+    }
+  );
 });
