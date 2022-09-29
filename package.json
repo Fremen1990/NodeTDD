@@ -70,6 +70,10 @@
       "jest-watch-typeahead/filename",
       "jest-watch-typeahead/testname"
     ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/config/"
+    ],
     "verbose": true,
     "testTimeout": 5000
   }
