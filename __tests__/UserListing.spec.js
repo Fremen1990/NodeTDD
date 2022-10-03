@@ -72,11 +72,11 @@ describe('Listing Users', () => {
     expect(response.body.content.length).toBe(6);
   });
 
-  it('returns only id, username and email in content array for each user', async () => {
+  it('returns only id, username, email and image in content array for each user', async () => {
     await addUsers(6, 5);
     const response = await getUsers();
     const user = response.body.content[0];
-    expect(Object.keys(user)).toEqual(['id', 'username', 'email']);
+    expect(Object.keys(user)).toEqual(['id', 'username', 'email', 'image']);
   });
 
   it('returns 2 as totalPages when there are 15 active and 7 inactive users', async () => {
@@ -175,7 +175,7 @@ describe('Get User', () => {
     expect(response.status).toBe(200);
   });
 
-  it('returns id, username and email in response body  when an active user exist', async () => {
+  it('returns id, username, email and image in response body  when an active user exist', async () => {
     const user = await User.create({
       username: 'user1',
       email: 'user1@mail.com',
@@ -183,7 +183,7 @@ describe('Get User', () => {
     });
 
     const response = await getUser(user.id);
-    expect(Object.keys(response.body)).toEqual(['id', 'username', 'email']);
+    expect(Object.keys(response.body)).toEqual(['id', 'username', 'email', 'image']);
   });
 
   it('returns 404 when the user is inactive', async () => {
