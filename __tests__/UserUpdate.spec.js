@@ -5,7 +5,8 @@ const sequelize = require('../src/config/database');
 const bcrypt = require('bcrypt');
 const en = require('../locales/en/translation.json');
 const pl = require('../locales/pl/translation.json');
-const { save } = require('../src/user/UserService');
+const fs = require('fs');
+const path = require('path');
 
 beforeAll(async () => {
   await sequelize.sync();
@@ -121,5 +122,18 @@ describe('User Update', () => {
   it('returns 403 when token is not valid', async () => {
     const response = await putUser(5, null, { token: '123' });
     expect(response.status).toBe(403);
+  });
+
+  it('saves the user image when update contains image as base64', async () => {
+    const filePath = path.join('.', '__tests__', 'resources', 'test-png.png');
+    const fileInBase64 = fs.readFileSync(filePath, { encoding: 'base64' });
+
+    const savedUser = await addUser();
+    const validUpdate = { username: 'user1-updated', image: fileInBase64 };
+    await putUser(savedUser.id, validUpdate, {
+      auth: { email: savedUser.email, password: 'P4ssword' },
+    });
+    const inDBUser = await User.findOne({ where: { id: savedUser.id } });
+    expect(inDBUser.image).toBeTruthy();
   });
 });
