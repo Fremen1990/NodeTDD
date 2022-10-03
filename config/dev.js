@@ -15,4 +15,6 @@ module.exports = {
       pass: 'EAzsQ2hJgGVckWyZfK',
     },
   },
+  uploadDir: 'uploads-dev',
+  profileDir: 'profile',
 };
