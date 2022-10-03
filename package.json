@@ -8,7 +8,10 @@
     "startAll": "concurrently \"cross-env NODE_ENV=dev npm run dev\" \"cd client && npm run client\"",
     "start": "cross-env NODE_ENV=dev node index.js",
     "dev": "cross-env NODE_ENV=dev nodemon index.js",
+
     "test": "cross-env NODE_ENV=test jest --watchAll --verbose",
+    "posttest": "cross-env NODE_ENV=test node test-cleanup",
+
     "lint": "eslint . ",
     "lint-fix": "eslint . --fix"
   },
