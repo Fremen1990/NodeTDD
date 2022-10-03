@@ -158,7 +158,6 @@ describe('User Update', () => {
     expect(Object.keys(response.body)).toEqual(['id', 'username', 'email', 'image']);
   });
 
-  //todo timeout 59. Storing Images in Folder 06:03
   it('saves the user image to upload folder and stores filename in user when update has image', async () => {
     const fileInBase64 = readFileAsBase64();
 
@@ -170,5 +169,24 @@ describe('User Update', () => {
     const inDBUser = await User.findOne({ where: { id: savedUser.id } });
     const profileImagePath = path.join(profileDirectory, inDBUser.image);
     expect(fs.existsSync(profileImagePath)).toBe(true);
+  });
+
+  it('removes the old image after user upload new one', async () => {
+    const fileInBase64 = readFileAsBase64();
+
+    const savedUser = await addUser();
+    const validUpdate = { username: 'user1-updated', image: fileInBase64 };
+    const response = await putUser(savedUser.id, validUpdate, {
+      auth: { email: savedUser.email, password: 'P4ssword' },
+    });
+
+    const firstImage = response.body.image;
+
+    await putUser(savedUser.id, validUpdate, {
+      auth: { email: savedUser.email, password: 'P4ssword' },
+    });
+
+    const profileImagePath = path.join(profileDirectory, firstImage);
+    expect(fs.existsSync(profileImagePath)).toBe(false);
   });
 });
