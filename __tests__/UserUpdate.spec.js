@@ -189,4 +189,26 @@ describe('User Update', () => {
     const profileImagePath = path.join(profileDirectory, firstImage);
     expect(fs.existsSync(profileImagePath)).toBe(false);
   });
+
+  it.each`
+    language | value             | message
+    ${'en'}  | ${null}           | ${en.username_null}
+    ${'en'}  | ${'usr'}          | ${en.username_size}
+    ${'en'}  | ${'a'.repeat(33)} | ${en.username_size}
+    ${'pl'}  | ${null}           | ${pl.username_null}
+    ${'pl'}  | ${'usr'}          | ${pl.username_size}
+    ${'pl'}  | ${'a'.repeat(33)} | ${pl.username_size}
+  `(
+    'returns bad request with $message when username is updated with $value and language is set as $language',
+    async ({ language, value, message }) => {
+      const savedUser = await addUser();
+      const invalidUpdate = { username: value };
+      const response = await putUser(savedUser.id, invalidUpdate, {
+        auth: { email: savedUser.email, password: 'P4ssword' },
+        language: language,
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.validationErrors.username).toBe(message);
+    }
+  );
 });
