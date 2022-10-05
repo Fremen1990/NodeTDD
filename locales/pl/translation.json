@@ -20,6 +20,8 @@
   "email_not_inuse": "E-mail nie znaleziony",
   "password_reset_request_success": "Sprawdź e-mail żeby zresetować swoje hasło",
   "unauthorized_password_reset": "Nie masz autoryzacji do zmiany hasła, powtórz kroki do zmiany hasła",
-  "profile_image_size": "Twoje zdjęcie profilowe nie może być większe niż 2MB"
+  "profile_image_size": "Twoje zdjęcie profilowe nie może być większe niż 2MB",
+  "unsupported_image_file": "Jedynie JPEG bądź PNG plik są dozwolone"
+
 
 }
