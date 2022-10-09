@@ -10,8 +10,13 @@
     "dev": "cross-env NODE_ENV=dev nodemon index.js",
     "test": "cross-env NODE_ENV=test jest --watchAll --verbose",
     "posttest": "cross-env NODE_ENV=test node test-cleanup",
+
     "lint": "eslint . ",
-    "lint-fix": "eslint . --fix"
+    "lint-fix": "eslint . --fix",
+
+    "test:staging": "cross-env NODE_ENV=staging jest --all . --runInBand",
+    "migrate:test": "cross-env NODE_ENV=staging sequelize-cli db:migrate",
+    "pretest:staging": "npm run migrate:test"
   },
   "author": "Tomasz Stanisz",
   "license": "ISC",

@@ -9,7 +9,9 @@ const { save } = require('../src/user/UserService');
 const Token = require('../src/auth/Token');
 
 beforeAll(async () => {
-  await sequelize.sync();
+  if (process.env.NODE_ENV === 'test') {
+    await sequelize.sync();
+  }
 });
 
 beforeEach(async () => {
