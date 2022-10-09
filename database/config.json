@@ -1,0 +1,10 @@
+{
+  "development": {
+    "username": "my-db-user",
+    "password": "db-pwd",
+    "database": "hoaxify",
+    "host": "localhost",
+    "dialect": "sqlite",
+    "storage": "./database.sqlite"
+  }
+}

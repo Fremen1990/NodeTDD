@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "scripts": {
     "client": "npx http-server -c-1 -p 8080 -P http://localhost:3000",
-    "startAll": "concurrently \"cross-env NODE_ENV=dev npm run dev\" \"cd client && npm run client\"",
+    "startAll": "concurrently \"cross-env NODE_ENV=development npm run dev\" \"cd client && npm run client\"",
     "start": "cross-env NODE_ENV=dev node index.js",
     "dev": "cross-env NODE_ENV=dev nodemon index.js",
     "test": "cross-env NODE_ENV=test jest --watchAll --verbose",
@@ -27,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.7.8",
     "sequelize": "^6.21.6",
+    "sequelize-cli": "^6.5.1",
     "sqlite3": "^5.0.11"
   },
   "devDependencies": {
