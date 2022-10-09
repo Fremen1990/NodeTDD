@@ -4,16 +4,17 @@ module.exports = {
     username: 'my-db-user',
     password: 'db-pwd',
     dialect: 'sqlite',
-    storage: './staging.sqlite',
+    storage: './prod-db.sqlite',
     logging: false,
   },
   mail: {
-    host: 'localhost',
-    port: Math.floor(Math.random() * 2000) + 10000,
-    tls: {
-      rejectUnauthorized: false,
+    host: 'smtp.ethereal.email',
+    port: 587,
+    auth: {
+      user: 'raul47@ethereal.email',
+      pass: 'EAzsQ2hJgGVckWyZfK',
     },
   },
-  uploadDir: 'uploads-staging',
+  uploadDir: 'uploads-production',
   profileDir: 'profile',
 };

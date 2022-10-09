@@ -6,15 +6,17 @@
   "scripts": {
     "client": "npx http-server -c-1 -p 8080 -P http://localhost:3000",
     "startAll": "concurrently \"cross-env NODE_ENV=development npm run dev\" \"cd client && npm run client\"",
-    "start": "cross-env NODE_ENV=dev node index.js",
-    "dev": "cross-env NODE_ENV=dev nodemon index.js",
-    "test": "cross-env NODE_ENV=test jest --watchAll --verbose",
-    "posttest": "cross-env NODE_ENV=test node test-cleanup",
+
+    "start:dev": "cross-env NODE_ENV=development npm run migrate && cross-env NODE_ENV=development nodemon index.js",
+    "start": "cross-env NODE_ENV=production npm run migrate && cross-env NODE_ENV=production node index.js",
+
+    "test": "cross-env NODE_ENV=test jest --watchAll --verbose && cross-env NODE_ENV=test npm run clean-up",
+    "test:staging": "cross-env NODE_ENV=staging npm run migrate && cross-env NODE_ENV=staging jest --all . --runInBand --forceExit && cross-env NODE_ENV=staging npm run clean-up",
+    "clean-up": "node test-cleanup",
+    "migrate": "sequelize-cli db:migrate",
+
     "lint": "eslint . ",
-    "lint-fix": "eslint . --fix",
-    "test:staging": "cross-env NODE_ENV=staging jest --all . --runInBand --forceExit",
-    "migrate:test": "cross-env NODE_ENV=staging sequelize-cli db:migrate",
-    "pretest:staging": "npm run migrate:test"
+    "lint-fix": "eslint . --fix"
   },
   "author": "Tomasz Stanisz",
   "license": "ISC",
