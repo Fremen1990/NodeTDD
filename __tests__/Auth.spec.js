@@ -19,6 +19,8 @@ beforeEach(async () => {
 
 const activeUser = { username: 'user1', email: 'user1@mail.com', password: 'P4ssword', inactive: false };
 
+const credentials = { email: 'user1@mail.com', password: 'P4ssword' };
+
 const addUser = async (user = { ...activeUser }) => {
   user.password = await bcrypt.hash(user.password, 10);
   return await User.create(user);
@@ -43,26 +45,26 @@ const postLogout = (options = {}) => {
 describe('Authentication', () => {
   it('returns 200 when credentials are correct', async () => {
     await addUser();
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     expect(response.status).toBe(200);
   });
 
   it('returns user id, username, image and token when login success', async () => {
     const user = await addUser();
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     expect(response.body.id).toBe(user.id);
     expect(response.body.username).toBe(user.username);
     expect(Object.keys(response.body)).toEqual(['id', 'username', 'image', 'token']);
   });
 
   it('returns 401 when user does not exist', async () => {
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     expect(response.status).toBe(401);
   });
 
   it('returns proper error body when authentication fails', async () => {
     const nowInMillis = new Date().getTime();
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     const error = response.body;
     expect(error.path).toBe('/api/1.0/auth');
     expect(error.timestamp).toBeGreaterThan(nowInMillis);
@@ -74,7 +76,7 @@ describe('Authentication', () => {
     ${'pl'}  | ${pl.authentication_failure}
     ${'en'}  | ${en.authentication_failure}
   `('returns $message when authentication fails and language is set as $language', async ({ language, message }) => {
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' }, { language });
+    const response = await postAuthentication(credentials, { language });
     expect(response.body.message).toBe(message);
   });
 
@@ -86,14 +88,14 @@ describe('Authentication', () => {
 
   it('returns 403 when logging in with an inactive account', async () => {
     await addUser({ ...activeUser, inactive: true });
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     expect(response.status).toBe(403);
   });
 
   it('returns proper error body when inactive authentication fails', async () => {
     await addUser({ ...activeUser, inactive: true });
     const nowInMillis = new Date().getTime();
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     const error = response.body;
     expect(error.path).toBe('/api/1.0/auth');
     expect(error.timestamp).toBeGreaterThan(nowInMillis);
@@ -108,7 +110,7 @@ describe('Authentication', () => {
     'returns $message when authentication fails for inactive account and language is set as $language',
     async ({ language, message }) => {
       await addUser({ ...activeUser, inactive: true });
-      const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' }, { language });
+      const response = await postAuthentication(credentials, { language });
       expect(response.body.message).toBe(message);
     }
   );
@@ -125,7 +127,7 @@ describe('Authentication', () => {
 
   it('returns token in response body when credentials are correct', async () => {
     await addUser();
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     expect(response.body.token).not.toBeUndefined();
   });
 });
@@ -138,7 +140,7 @@ describe('Logout', () => {
 
   it('removes the token from database', async () => {
     await addUser();
-    const response = await postAuthentication({ email: 'user1@mail.com', password: 'P4ssword' });
+    const response = await postAuthentication(credentials);
     const token = response.body.token;
     await postLogout({ token: token });
     const storedToken = await Token.findOne({ where: { token: token } });

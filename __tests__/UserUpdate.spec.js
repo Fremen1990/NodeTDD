@@ -24,6 +24,8 @@ beforeEach(async () => {
 
 const activeUser = { username: 'user1', email: 'user1@mail.com', password: 'P4ssword', inactive: false };
 
+const credentials = { email: 'user1@mail.com', password: 'P4ssword' };
+
 const addUser = async (user = { ...activeUser }) => {
   user.password = await bcrypt.hash(user.password, 10);
   return await User.create(user);
@@ -93,7 +95,7 @@ describe('User Update', () => {
     await addUser();
     const userToBeUpdated = await addUser({ ...activeUser, username: 'user2', email: 'user2@mail.com' });
     const response = await putUser(userToBeUpdated.id, null, {
-      auth: { email: 'user1@mail.com', password: 'P4ssword' },
+      auth: credentials,
     });
     expect(response.status).toBe(403);
   });
@@ -106,7 +108,7 @@ describe('User Update', () => {
       email: 'user2@mail.com',
     });
     const response = await putUser(userToBeUpdated.id, null, {
-      auth: { email: 'user1@mail.com', password: 'P4ssword' },
+      auth: credentials,
     });
     expect(response.status).toBe(403);
   });
