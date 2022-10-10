@@ -1,7 +1,7 @@
 {
-  "name": "node-tdd",
+  "name": "tdd-node",
   "version": "1.0.0",
-  "description": "",
+  "description": "TDD with Node and Express",
   "main": "src/app.js",
   "scripts": {
     "client": "npx http-server -c-1 -p 8080 -P http://localhost:3000",
