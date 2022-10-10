@@ -14,4 +14,6 @@ TokenService.scheduleCleanup();
 // logger.debug('debug');
 // logger.silly('silly');
 
-app.listen(3000, () => logger.info('server is running. Version: ' + process.env.npm_package_version));
+app.listen(process.env.PORT || 3000, () =>
+  logger.info('server is running. Version: ' + process.env.npm_package_version)
+);

@@ -10,6 +10,7 @@ const tokenAuthentication = require('./middleware/tokenAuthentication');
 const FileService = require('./file/FileService');
 const config = require('config');
 const path = require('path');
+const logger = require('./shared/logger');
 
 const { uploadDir, profileDir } = config;
 const profileFolder = path.join('.', uploadDir, profileDir);
@@ -49,6 +50,8 @@ app.use(AuthenticationRouter);
 
 app.use(errorHandler);
 
-console.log('env: ' + process.env.NODE_ENV);
+logger.info('env: ' + process.env.NODE_ENV);
 
 module.exports = app;
+
+//TODO 76. Deploying to Heroku
