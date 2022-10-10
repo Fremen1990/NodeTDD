@@ -17,9 +17,10 @@ const sendAccountActivation = async (email, token) => {
 </div>`,
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    logger.info('url: ' + nodemailer.getTestMessageUrl(info));
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   logger.info('url: ' + nodemailer.getTestMessageUrl(info));
+  // }
+  logger.info('url: ' + nodemailer.getTestMessageUrl(info)); // using SMTP in production
 };
 
 const sendPasswordReset = async (email, token) => {
@@ -37,9 +38,10 @@ const sendPasswordReset = async (email, token) => {
 </div>`,
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    logger.info('url: ' + nodemailer.getTestMessageUrl(info));
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   logger.info('url: ' + nodemailer.getTestMessageUrl(info));
+  // }
+  logger.info('url: ' + nodemailer.getTestMessageUrl(info)); // using SMTP in production
 };
 
 module.exports = { sendAccountActivation, sendPasswordReset };

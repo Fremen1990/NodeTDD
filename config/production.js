@@ -10,8 +10,10 @@ module.exports = {
   mail: {
     host: 'smtp.ethereal.email',
     port: 587,
+    // service:"gmail",
     auth: {
       user: 'raul47@ethereal.email',
+      // user: 'freeeemen1990@gmail.com',
       pass: 'EAzsQ2hJgGVckWyZfK',
     },
   },
