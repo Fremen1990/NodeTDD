@@ -105,4 +105,45 @@ describe('Post Hoax', () => {
     const response = await postHoax({ content: 'Hoax content' }, { auth: credentials, language });
     expect(response.body.message).toBe(message);
   });
+
+  it.each`
+    language | message
+    ${'pl'}  | ${pl.validation_failure}
+    ${'en'}  | ${en.validation_failure}
+  `(
+    'returns 400 and $message when hoax content is less than 10 characters and language $language',
+    async ({ language, message }) => {
+      await addUser();
+      const response = await postHoax({ content: '123456789' }, { auth: credentials, language });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(message);
+    }
+  );
+
+  it('returns validation error body when an invalid hoax post by authorized user', async () => {
+    await addUser();
+    const nowInMillis = Date.now();
+    const response = await postHoax({ content: '123456789' }, { auth: credentials });
+    const error = response.body;
+    expect(error.timestamp).toBeGreaterThan(nowInMillis);
+    expect(error.path).toBe('/api/1.0/hoaxes');
+    expect(Object.keys(error)).toEqual(['path', 'timestamp', 'message', 'validationErrors']);
+  });
+
+  it.each`
+    language | content             | contentForDescription | message
+    ${'pl'}  | ${null}             | ${'null'}             | ${pl.hoax_content_size}
+    ${'pl'}  | ${'a'.repeat(9)}    | ${'short'}            | ${pl.hoax_content_size}
+    ${'pl'}  | ${'a'.repeat(5001)} | ${'very long'}        | ${pl.hoax_content_size}
+    ${'en'}  | ${null}             | ${'null'}             | ${en.hoax_content_size}
+    ${'en'}  | ${'a'.repeat(9)}    | ${'short'}            | ${en.hoax_content_size}
+    ${'en'}  | ${'a'.repeat(5001)} | ${'very long'}        | ${en.hoax_content_size}
+  `(
+    'returns $message when content is $contentForDescription and language is $language',
+    async ({ language, content, message }) => {
+      await addUser();
+      const response = await postHoax({ content: content }, { auth: credentials, language });
+      expect(response.body.validationErrors.content).toBe(message);
+    }
+  );
 });
