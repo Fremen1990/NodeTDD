@@ -4,6 +4,7 @@ const en = require('../locales/en/translation.json');
 const pl = require('../locales/pl/translation.json');
 
 const User = require('../src/user/User');
+const Hoax = require('../src/hoax/Hoax');
 const sequelize = require('../src/config/database');
 const bcrypt = require('bcrypt');
 
@@ -14,6 +15,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  await Hoax.destroy({ truncate: true });
   await User.destroy({ truncate: { cascade: true } });
 });
 
@@ -74,5 +76,33 @@ describe('Post Hoax', () => {
     await addUser();
     const response = await postHoax({ content: 'Hoax content' }, { auth: credentials });
     expect(response.status).toBe(200);
+  });
+
+  it('saves the hoax to database when authorized user sends valid request', async () => {
+    await addUser();
+    await postHoax({ content: 'Hoax content' }, { auth: credentials });
+    const hoaxes = await Hoax.findAll();
+    expect(hoaxes.length).toBe(1);
+  });
+
+  it('saves the hoax content and timestamp to database', async () => {
+    await addUser();
+    const beforeSubmit = Date.now();
+    await postHoax({ content: 'Hoax content' }, { auth: credentials });
+    const hoaxes = await Hoax.findAll();
+    const savedHoax = hoaxes[0];
+    expect(savedHoax.content).toBe('Hoax content');
+    expect(savedHoax.timestamp).toBeGreaterThan(beforeSubmit);
+    expect(savedHoax.timestamp).toBeLessThan(Date.now());
+  });
+
+  it.each`
+    language | message
+    ${'pl'}  | ${pl.hoax_submit_success}
+    ${'en'}  | ${en.hoax_submit_success}
+  `('returns $message to success submit when language is $language', async ({ language, message }) => {
+    await addUser();
+    const response = await postHoax({ content: 'Hoax content' }, { auth: credentials, language });
+    expect(response.body.message).toBe(message);
   });
 });
