@@ -14,8 +14,9 @@ const config = require('config');
 const path = require('path');
 const logger = require('./shared/logger');
 
-const { uploadDir, profileDir } = config;
+const { uploadDir, profileDir, attachmentDir } = config;
 const profileFolder = path.join('.', uploadDir, profileDir);
+const attachmentFolder = path.join('.', uploadDir, attachmentDir);
 
 const ONE_YEAR_IN_MILLIS = 365 * 24 * 60 * 60 * 1000;
 
@@ -44,6 +45,8 @@ app.use(middleware.handle(i18next));
 app.use(express.json({ limit: '3mb' }));
 
 app.use('/images', express.static(profileFolder, { maxAge: ONE_YEAR_IN_MILLIS }));
+
+app.use('/attachments', express.static(attachmentFolder, { maxAge: ONE_YEAR_IN_MILLIS }));
 
 app.use(tokenAuthentication);
 
