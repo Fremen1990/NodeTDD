@@ -4,8 +4,9 @@ const config = require('config');
 const { randomString } = require('../shared/generator');
 const FileType = require('file-type');
 
-const { uploadDir, profileDir } = config;
+const { uploadDir, profileDir, attachmentDir } = config;
 const profileFolder = path.join('.', uploadDir, profileDir);
+const attachmentFolder = path.join('.', uploadDir, attachmentDir);
 
 const createFolders = () => {
   if (!fs.existsSync(uploadDir)) {
@@ -14,6 +15,10 @@ const createFolders = () => {
 
   if (!fs.existsSync(profileFolder)) {
     fs.mkdirSync(profileFolder);
+  }
+
+  if (!fs.existsSync(attachmentFolder)) {
+    fs.mkdirSync(attachmentFolder);
   }
 };
 
