@@ -8,7 +8,8 @@ module.exports = {
     // dialect: 'sqlite',
     dialect: 'postgres',
     // storage: './staging.sqlite',
-    host: 'localhost', // postgres purpose
+    // host: 'localhost', // postgres purpose
+    host: '127.0.0.1', // postgres purpose
     logging: false,
   },
   mail: {
