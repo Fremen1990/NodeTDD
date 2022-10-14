@@ -18,8 +18,6 @@ describe('Listing All Hoaxes', () => {
       fileType: 'image/png',
       hoaxId: hoaxId,
     });
-
-    return `ATTACHMENT ADDED WITH ID ${hoaxId} `;
   };
 
   const addHoaxes = async (count) => {
