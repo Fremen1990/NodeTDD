@@ -25,7 +25,9 @@
   "unauthorized_hoax_submit": "Nie jestes autoryzowany do wysyłania hoax",
   "hoax_submit_success": "Hoax zapisany",
   "hoax_content_size": "Hoax musi mieć min 10 i max 5000 znaków",
-  "attachment_size_limit": "Załadowany plik nie może być większy nić 5MB"
+  "attachment_size_limit": "Załadowany plik nie może być większy nić 5MB",
+  "unauthorized_hoax_delete": "Nie masz autoryzacji żeby usunąć ten hoax"
+
 
 
 

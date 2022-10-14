@@ -1,0 +1,86 @@
+const request = require('supertest');
+const app = require('../src/app');
+const User = require('../src/user/User');
+const bcrypt = require('bcrypt');
+const en = require('../locales/en/translation.json');
+const pl = require('../locales/pl/translation.json');
+const { save } = require('../src/user/UserService');
+const Hoax = require('../src/hoax/Hoax');
+
+beforeEach(async () => {
+  await User.destroy({ truncate: { cascade: true } });
+});
+
+const activeUser = { username: 'user1', email: 'user1@mail.com', password: 'P4ssword', inactive: false };
+
+const credentials = { email: 'user1@mail.com', password: 'P4ssword' };
+
+const addUser = async (user = { ...activeUser }) => {
+  user.password = await bcrypt.hash(user.password, 10);
+  return await User.create(user);
+};
+
+const addHoax = async (userId) => {
+  return await Hoax.create({
+    content: 'Hoax for user',
+    timestamp: Date.now(),
+    userId: userId,
+  });
+};
+
+const auth = async (options = {}) => {
+  let token;
+  if (options.auth) {
+    const response = await request(app).post('/api/1.0/auth').send(options.auth);
+    token = response.body.token;
+  }
+  return token;
+};
+
+const deleteHoaks = async (id = 5, options = {}) => {
+  const agent = request(app).delete(`/api/1.0/hoaxes/${id}`);
+
+  if (options.language) {
+    agent.set('Accept-Language', options.language);
+  }
+  if (options.token) {
+    agent.set('Authorization', `Bearer ${options.token}`);
+  }
+
+  return agent.send();
+};
+describe('Delete Hoax', () => {
+  it('returns 403 when request is unauthorized', async () => {
+    const response = await deleteHoaks();
+    expect(response.status).toBe(403);
+  });
+
+  it('returns 403 when token is invalid', async () => {
+    const response = await deleteHoaks(5, { token: 'abcde' });
+    expect(response.status).toBe(403);
+  });
+
+  it.each`
+    language | message
+    ${'pl'}  | ${pl.unauthorized_hoax_delete}
+    ${'en'}  | ${en.unauthorized_hoax_delete}
+  `(
+    'returns error body with $message for unauthorized request when language is set $language',
+    async ({ language, message }) => {
+      const nowInMillis = new Date().getTime();
+      const response = await deleteHoaks(5, { language });
+      expect(response.body.path).toBe('/api/1.0/hoaxes/5');
+      expect(response.body.timestamp).toBeGreaterThan(nowInMillis);
+      expect(response.body.message).toBe(message);
+    }
+  );
+
+  it('returns 403 when user tries to delete another users hoax', async () => {
+    const user = await addUser();
+    const hoax = await addHoax(user.id);
+    const user2 = await addUser({ ...activeUser, username: 'user2', email: 'user2@mail.com' });
+    const token = await auth({ auth: { email: 'user2@email', password: 'P4ssword' } });
+    const response = await deleteHoaks(hoax.id, { token });
+    expect(response.status).toBe(403);
+  });
+});
