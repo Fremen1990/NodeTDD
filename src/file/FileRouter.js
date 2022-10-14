@@ -2,12 +2,17 @@ const express = require('express');
 const router = express.Router();
 const FileService = require('./FileService');
 const multer = require('multer');
-const upload = multer();
+const FileSizeException = require('../file/FileSizeException');
 
-router.post('/api/1.0/hoaxes/attachments', upload.single('file'), async (req, res) => {
-  // console.log(req.file);
-  await FileService.saveAttachment(req.file);
-  res.send();
+const FIVE_MB = 5 * 1024 * 1024;
+const upload = multer({ limits: { fileSize: FIVE_MB } }).single('file');
+
+router.post('/api/1.0/hoaxes/attachments', (req, res, next) => {
+  upload(req, res, async (err) => {
+    if (err) return next(new FileSizeException());
+    await FileService.saveAttachment(req.file);
+    res.send();
+  });
 });
 
 module.exports = router;
