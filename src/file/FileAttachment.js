@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../config/database');
+const Hoax = require('../hoax/Hoax');
 
 const Model = Sequelize.Model;
 

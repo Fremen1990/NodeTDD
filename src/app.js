@@ -60,5 +60,3 @@ app.use(errorHandler);
 logger.info('env: ' + process.env.NODE_ENV);
 
 module.exports = app;
-
-//TODO 76. Deploying to Heroku

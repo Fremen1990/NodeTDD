@@ -2,6 +2,8 @@ const Hoax = require('./Hoax');
 const { Sequelize } = require('sequelize');
 const User = require('../user/User');
 const NotFoundException = require('../error/NotFoundException');
+const FileService = require('../file/FileService');
+const FileAttachment = require('../file/FileAttachment');
 
 const save = async (body, user) => {
   const hoax = {
@@ -9,7 +11,10 @@ const save = async (body, user) => {
     timestamp: Date.now(),
     userId: user.id,
   };
-  await Hoax.create(hoax);
+  const { id } = await Hoax.create(hoax);
+  if (body.fileAttachment) {
+    await FileService.associateFileToHoax(body.fileAttachment, id);
+  }
 };
 
 const getHoaxes = async (page, size, userId) => {
@@ -23,18 +28,43 @@ const getHoaxes = async (page, size, userId) => {
   }
   const hoaxesWithCount = await Hoax.findAndCountAll({
     attributes: ['id', 'content', 'timestamp'],
-    include: {
-      model: User,
-      as: 'user',
-      attributes: ['id', 'username', 'email', 'image'],
-      where: where,
-    },
+    include: [
+      {
+        model: User,
+        as: 'user',
+        attributes: ['id', 'username', 'email', 'image'],
+        where,
+      },
+      // {
+      //   model: FileAttachment,
+      //   as: 'fileAttachment',
+      //   attributes: ['filename', 'fileType'],
+      // },
+    ],
     order: [['id', 'DESC']],
     limit: size,
     offset: page * size,
   });
+
+  const newContent = hoaxesWithCount.rows.map((hoaxSequelize) => {
+    const hoaxAsJSON = hoaxSequelize.get({ plain: true });
+    if (hoaxAsJSON.fileAttachment === null) {
+      delete hoaxAsJSON.fileAttachment;
+    }
+    return hoaxAsJSON;
+  });
+
+  // const newContent = [];
+  // for (let hoaxSequelize of hoaxesWithCount.rows) {
+  //   const hoaxAsJSON = hoaxSequelize.get({ plain: true });
+  //   if (hoaxAsJSON.fileAttachment === null) {
+  //     delete hoaxAsJSON.fileAttachment;
+  //   }
+  //   newContent.push(hoaxAsJSON);
+  // }
+
   return {
-    content: hoaxesWithCount.rows,
+    content: newContent,
     page,
     size,
     totalPages: Math.ceil(hoaxesWithCount.count / size),
