@@ -6,9 +6,24 @@ const en = require('../locales/en/translation.json');
 const pl = require('../locales/pl/translation.json');
 const { save } = require('../src/user/UserService');
 const Hoax = require('../src/hoax/Hoax');
+const FileAttachment = require('../src/file/FileAttachment');
+const fs = require('fs');
+const path = require('path');
+const config = require('config');
+
+const { uploadDir, attachmentDir } = config;
+const attachmentFolder = path.join('.', uploadDir, attachmentDir);
+
+const filename = 'test-file-hoax-delete' + Date.now();
+const targetPath = path.join(attachmentFolder, filename);
+const testFilePath = path.join('.', '__tests__', 'resources', 'test-png.png');
 
 beforeEach(async () => {
+  // await FileAttachment.destroy({ truncate: true });
   await User.destroy({ truncate: { cascade: true } });
+  if (fs.existsSync(targetPath)) {
+    fs.unlinkSync(targetPath);
+  }
 });
 
 const activeUser = { username: 'user1', email: 'user1@mail.com', password: 'P4ssword', inactive: false };
@@ -25,6 +40,15 @@ const addHoax = async (userId) => {
     content: 'Hoax for user',
     timestamp: Date.now(),
     userId: userId,
+  });
+};
+
+const addFileAttachment = async (hoaxId) => {
+  fs.copyFileSync(testFilePath, targetPath);
+  return await FileAttachment.create({
+    filename: filename,
+    uploadDate: new Date(),
+    hoaxId: hoaxId,
   });
 };
 
@@ -99,5 +123,26 @@ describe('Delete Hoax', () => {
     await deleteHoaks(hoax.id, { token });
     const hoaxInDb = await Hoax.findOne({ where: { id: hoax.id } });
     expect(hoaxInDb).toBeNull();
+  });
+
+  it.skip('removes the fileAttachment from database when user deletes their hoax', async () => {
+    // onDelete Cascade - relations not working here
+    const user = await addUser();
+    const hoax = await addHoax(user.id);
+    const attachment = await addFileAttachment(hoax.id);
+    const token = await auth({ auth: credentials });
+    await deleteHoaks(hoax.id, { token });
+    const attachmentInDb = await FileAttachment.findOne({ where: { id: attachment.id } });
+    expect(attachmentInDb).toBeNull();
+  });
+
+  it.skip('removes the file from storage when user deletes their hoax', async () => {
+    // onDelete Cascade - relations not working here
+    const user = await addUser();
+    const hoax = await addHoax(user.id);
+    await addFileAttachment(hoax.id);
+    const token = await auth({ auth: credentials });
+    await deleteHoaks(hoax.id, { token });
+    expect(fs.existsSync(targetPath)).toBe(false);
   });
 });
