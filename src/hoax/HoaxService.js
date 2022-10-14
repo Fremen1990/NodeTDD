@@ -2,6 +2,7 @@ const Hoax = require('./Hoax');
 const { Sequelize } = require('sequelize');
 const User = require('../user/User');
 const NotFoundException = require('../error/NotFoundException');
+const ForbiddenException = require('../error/ForbiddenException');
 const FileService = require('../file/FileService');
 const FileAttachment = require('../file/FileAttachment');
 
@@ -71,4 +72,14 @@ const getHoaxes = async (page, size, userId) => {
   };
 };
 
-module.exports = { save, getHoaxes };
+const deleteHoax = async (hoaxId, userId) => {
+  const hoaxToBeDeleted = await Hoax.findOne({
+    where: { id: hoaxId, userId: userId },
+  });
+  if (!hoaxToBeDeleted) {
+    throw new ForbiddenException('unauthorized_hoax_delete');
+  }
+  await hoaxToBeDeleted.destroy();
+};
+
+module.exports = { save, getHoaxes, deleteHoax };
