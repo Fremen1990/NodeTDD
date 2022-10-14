@@ -54,11 +54,20 @@ const isSupportedFileType = async (buffer) => {
 };
 
 const saveAttachment = async (file) => {
-  const filename = randomString(32);
+  const type = await FileType.fromBuffer(file.buffer);
+  let fileType;
+  let filename = randomString(32);
+  if (type) {
+    fileType = type.mime;
+    filename += `.${type.ext}`;
+  }
+  // console.log(`Type from multer ${file.mimetype}`);
+  // console.log('Type from TypeFile', type);
   await fs.promises.writeFile(path.join(attachmentFolder, filename), file.buffer);
   await FileAttachment.create({
     filename,
     uploadDate: new Date(),
+    fileType: fileType,
   });
 };
 
