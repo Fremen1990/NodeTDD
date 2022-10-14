@@ -83,6 +83,9 @@
       "<rootDir>/node_modules/",
       "<rootDir>/config/"
     ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/test-setup.js"
+    ],
     "verbose": true,
     "testTimeout": 5000
   }

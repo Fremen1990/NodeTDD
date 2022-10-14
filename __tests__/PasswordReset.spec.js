@@ -4,12 +4,12 @@ const pl = require('../locales/pl/translation.json');
 const en = require('../locales/en/translation.json');
 
 const User = require('../src/user/User');
-const sequelize = require('../src/config/database');
 const bcrypt = require('bcrypt');
 
 const SMTPServer = require('smtp-server').SMTPServer;
 const config = require('config');
 const Token = require('../src/auth/Token');
+const FileAttachment = require('../src/file/FileAttachment');
 
 let lastMail, server;
 let simulateSmtpFailure = false;
@@ -36,10 +36,7 @@ beforeAll(async () => {
 
   await server.listen(config.mail.port, 'localhost');
 
-  if (process.env.NODE_ENV === 'test') {
-    await sequelize.sync();
-  }
-
+  await FileAttachment.destroy({ truncate: true });
   jest.setTimeout(20000);
 });
 
